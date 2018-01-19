@@ -26,8 +26,8 @@
         </activity>
 
 
-        2 <service android:name="com.example.longyuan.servicetest.DownloadService" >
-    </service>
+        <service android:name="com.example.longyuan.servicetest.DownloadService" />
+        <service android:name="com.example.longyuan.servicetest.HelloService" />
     </application>
 
 </manifest>

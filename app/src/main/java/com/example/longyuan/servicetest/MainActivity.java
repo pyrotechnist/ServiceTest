@@ -147,11 +147,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void download(){
 
-        Intent intent = new Intent(this, DownloadService.class);
+        //Intent intent = new Intent(this, DownloadService.class);
+
+        Intent intent = new Intent(this, HelloService.class);
+
         // add infos for the service which file to download and where to store
-        intent.putExtra(DownloadService.FILENAME, "index.html");
-        intent.putExtra(DownloadService.URL1,
-                "http://www.vogella.com/index.html");
+        //intent.putExtra(DownloadService.FILENAME, "index.html");
+        //intent.putExtra(DownloadService.URL1,
+        //        "http://www.vogella.com/index.html");
         startService(intent);
         textView.setText("Service started");
     }
