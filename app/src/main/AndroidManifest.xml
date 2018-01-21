@@ -26,8 +26,13 @@
         </activity>
 
 
-        <service android:name="com.example.longyuan.servicetest.DownloadService" />
-        <service android:name="com.example.longyuan.servicetest.HelloService" />
+        <service android:name="com.example.longyuan.servicetest.service.intentservice.IntentTestService" />
+        <service android:name="com.example.longyuan.servicetest.service.HandlerService" />
+        <service android:name="com.example.longyuan.servicetest.service.boundservice.BindService" />
+        <service android:name="com.example.longyuan.servicetest.service.boundservice.MessengerBindService" />
+        <service android:name="com.example.longyuan.servicetest.service.HelloService" />
+
+
     </application>
 
 </manifest>

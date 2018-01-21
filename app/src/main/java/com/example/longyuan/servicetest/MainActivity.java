@@ -3,36 +3,44 @@ package com.example.longyuan.servicetest;
 import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.longyuan.servicetest.service.boundservice.BindService;
+import com.example.longyuan.servicetest.service.HelloService;
+import com.example.longyuan.servicetest.service.intentservice.IntentTestService;
+import com.example.longyuan.servicetest.service.boundservice.MessengerBindService;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textView;
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Intent Service
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Intent Service
+
+    // for receiving information from IntentTestService
     private BroadcastReceiver receiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-                String string = bundle.getString(DownloadService.FILEPATH);
-                int resultCode = bundle.getInt(DownloadService.RESULT);
+                String string = bundle.getString(IntentTestService.FILEPATH);
+                int resultCode = bundle.getInt(IntentTestService.RESULT);
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(MainActivity.this,
                             "Download complete. Download URI: " + string,
@@ -47,48 +55,55 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        textView = (TextView) findViewById(R.id.status);
 
 
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(receiver, new IntentFilter(
-                DownloadService.NOTIFICATION));
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(receiver);
-    }
-
-    public void onClick(View view) {
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End Intent Service
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End Intent Service
 
 
-        int permissionCheck = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if(permissionCheck == PERMISSION_GRANTED){
 
-            download();
-        }else {
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Bound Service
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Bound Service
 
-            verifyStoragePermissions(this);
+    BindService mService;
+    boolean mBound = false;
+
+    /** Messenger for communicating with the service. */
+    Messenger mMessengerService = null;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+
+         /*   // BindService
+         BindService.LocalBinder binder = (BindService.LocalBinder) service;
+            mService = binder.getService();*/
+
+            // MessengerBindService
+            mMessengerService = new Messenger(service);
+
+            mBound = true;
         }
 
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
+
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Stop Bound Service
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Stop Bound Service
 
 
 
-
-
-    }
-
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Common
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Common
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -96,6 +111,176 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+
+
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Common
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Common
+
+
+    private TextView textView;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        textView = (TextView) findViewById(R.id.status);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // for intent service
+        registerReceiver(receiver, new IntentFilter(
+                IntentTestService.NOTIFICATION));
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // for intent service
+        unregisterReceiver(receiver);
+    }
+
+
+
+    private boolean permissionCheck(){
+
+        int permissionCheck = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if(permissionCheck == PERMISSION_GRANTED){
+
+           return true;
+        }else {
+
+            return false;
+        }
+    }
+
+
+
+
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Intent Service
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Intent Service
+
+    private void download(){
+
+        Intent intent = new Intent(this, IntentTestService.class);
+        intent.putExtra(IntentTestService.FILENAME, "index.html");
+        intent.putExtra(IntentTestService.URL1,
+                "http://www.vogella.com/index.html");
+
+        startService(intent);
+
+        textView.setText("Service started");
+    }
+
+    public void intentServiceTestDownload(View view) {
+
+        if(permissionCheck()){
+            download();
+        }else {
+            verifyStoragePermissions(this);
+        }
+    }
+
+    public void intentServiceTestToast(View view) {
+
+
+        Intent intent = new Intent(this, IntentTestService.class);
+
+        startService(intent);
+
+        textView.setText("Intent Service started");
+    }
+
+
+
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End Intent Service
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End Intent Service
+
+
+
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Bound Service
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Bound Service
+
+    public void bindServiceMessager(View view){
+
+        //Intent bindIntent = new Intent(this, BindService.class);
+
+        Intent bindIntent = new Intent(this, MessengerBindService.class);
+        bindService(bindIntent, mConnection, BIND_AUTO_CREATE);
+
+    }
+
+    public void unbindServiceMessager(View view){
+
+        unbindService(mConnection);
+
+    }
+
+    public void bindServiceCalcu(View view){
+
+        Intent bindIntent = new Intent(this, BindService.class);
+
+        bindService(bindIntent, mConnection, BIND_AUTO_CREATE);
+
+    }
+
+    public void unbindServiceCalcu(View view){
+
+        unbindService(mConnection);
+    }
+
+    public void sendMessage(View view){
+
+        if (!mBound) return;
+        // Create and send a message to the service, using a supported 'what' value
+        Message msg = Message.obtain(null, MessengerBindService.MSG_SAY_HELLO, 0, 0);
+        try {
+            mMessengerService.send(msg);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    public void getNumber(View view){
+
+        if(mBound){
+            textView.setText(String.valueOf(mService.getRandomNumber()));
+        }
+
+
+    }
+
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End Bound Service
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End Bound Service
+
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin  Service
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin  Service
+
+    public void startService(View view){
+        Intent intent = new Intent(this, HelloService.class);
+
+        startService(intent);
+    }
+
+    public void stopService(View view){
+        Intent intent = new Intent(this, HelloService.class);
+
+        stopService(intent);
+    }
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End  Service
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End  Service
+
 
     /**
      * Checks if the app has permission to write to device storage
@@ -144,18 +329,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private void download(){
-
-        //Intent intent = new Intent(this, DownloadService.class);
-
-        Intent intent = new Intent(this, HelloService.class);
-
-        // add infos for the service which file to download and where to store
-        //intent.putExtra(DownloadService.FILENAME, "index.html");
-        //intent.putExtra(DownloadService.URL1,
-        //        "http://www.vogella.com/index.html");
-        startService(intent);
-        textView.setText("Service started");
-    }
 }

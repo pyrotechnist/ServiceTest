@@ -1,4 +1,4 @@
-package com.example.longyuan.servicetest;
+package com.example.longyuan.servicetest.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
  * Created by loxu on 19/01/2018.
  */
 
-public class HelloService extends Service {
+public class HandlerService extends Service {
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
 

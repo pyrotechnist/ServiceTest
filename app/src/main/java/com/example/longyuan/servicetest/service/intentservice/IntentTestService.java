@@ -1,12 +1,11 @@
-package com.example.longyuan.servicetest;
+package com.example.longyuan.servicetest.service.intentservice;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
+import android.os.Handler;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,7 +18,7 @@ import java.net.URL;
  * Created by LONGYUAN on 2018/1/18.
  */
 
-public class DownloadService extends IntentService {
+public class IntentTestService extends IntentService {
 
     private int result = Activity.RESULT_CANCELED;
     public static final String URL1 = "urlpath";
@@ -28,8 +27,17 @@ public class DownloadService extends IntentService {
     public static final String RESULT = "result";
     public static final String NOTIFICATION = "com.vogella.android.service.receiver";
 
-    public DownloadService() {
-        super("DownloadService");
+    // post task to ui thread
+    private Handler mHandler;
+
+    public IntentTestService() {
+        super("IntentTestService");
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mHandler = new Handler();
     }
 
     // will be called asynchronously by Android
@@ -37,6 +45,50 @@ public class DownloadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String urlPath = intent.getStringExtra(URL1);
         String fileName = intent.getStringExtra(FILENAME);
+
+        if(urlPath != null && urlPath!= "")
+        {
+            download(urlPath,fileName);
+        }else {
+
+            displayToast();
+        }
+
+    }
+
+    private void displayToast() {
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(IntentTestService.this, "Hello Toast from intent service!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onDestroy() {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(IntentTestService.this, "intent service stop!", Toast.LENGTH_LONG).show();
+            }
+        });
+        super.onDestroy();
+
+    }
+
+    private void publishResults(String outputPath, int result) {
+        Intent intent = new Intent(NOTIFICATION);
+        intent.putExtra(FILEPATH, outputPath);
+        intent.putExtra(RESULT, result);
+        sendBroadcast(intent);
+    }
+
+
+    private void download(String urlPath,String fileName){
+
         File output = new File(Environment.getExternalStorageDirectory(),
                 fileName);
         if (output.exists()) {
@@ -77,12 +129,5 @@ public class DownloadService extends IntentService {
             }
         }
         publishResults(output.getAbsolutePath(), result);
-    }
-
-    private void publishResults(String outputPath, int result) {
-        Intent intent = new Intent(NOTIFICATION);
-        intent.putExtra(FILEPATH, outputPath);
-        intent.putExtra(RESULT, result);
-        sendBroadcast(intent);
     }
 }
