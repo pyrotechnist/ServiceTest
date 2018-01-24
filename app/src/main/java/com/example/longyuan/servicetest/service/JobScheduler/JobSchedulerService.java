@@ -15,7 +15,7 @@ public class JobSchedulerService extends JobService {
     private Handler mJobHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage( Message msg ) {
-            Toast.makeText( getApplicationContext(), "JobService task running", Toast.LENGTH_SHORT ).show();
+            Toast.makeText( getApplicationContext(), "JobService task running every 3 seconds", Toast.LENGTH_SHORT ).show();
             jobFinished( (JobParameters) msg.obj, false );
             return true;
         }

@@ -2,6 +2,8 @@ package com.example.longyuan.servicetest;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,11 +25,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.longyuan.servicetest.service.HandlerService;
+import com.example.longyuan.servicetest.service.JobScheduler.JobSchedulerService;
 import com.example.longyuan.servicetest.service.boundservice.BindService;
 import com.example.longyuan.servicetest.service.HelloService;
 import com.example.longyuan.servicetest.service.intentservice.IntentTestService;
 import com.example.longyuan.servicetest.service.boundservice.MessengerBindService;
 
+import static android.app.job.JobScheduler.RESULT_FAILURE;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity {
@@ -124,7 +128,13 @@ public class MainActivity extends AppCompatActivity {
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Stop Bound Service
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Stop Bound Service
 
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  JobScheduler
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  JobScheduler
 
+    private JobScheduler mJobScheduler;
+
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  JobScheduler
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  JobScheduler
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Common
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Common
@@ -153,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //textView = (TextView) findViewById(R.id.status);
+
+        mJobScheduler = (JobScheduler) getSystemService( Context.JOB_SCHEDULER_SERVICE );
 
     }
 
@@ -376,6 +388,34 @@ public class MainActivity extends AppCompatActivity {
     }
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End  Service
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< End  Service
+
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  JobScheduler
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  JobScheduler
+
+   public void startJobSchedulerService(View view){
+
+       JobInfo.Builder builder = new JobInfo.Builder( 1,
+               new ComponentName( getPackageName(), JobSchedulerService.class.getName() ) );
+
+       builder.setPeriodic( 3000 );
+
+
+       if( mJobScheduler.schedule( builder.build() ) <= RESULT_FAILURE ) {
+           //If something goes wrong
+       }
+   }
+
+    public void cancelJobSchedulerService(View view){
+     
+        mJobScheduler.cancelAll();
+        Toast.makeText(MainActivity.this,
+                "JobSchedulerService cancelled ",
+                Toast.LENGTH_LONG).show();
+    }
+
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  JobScheduler
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<  JobScheduler
 
 
     /**

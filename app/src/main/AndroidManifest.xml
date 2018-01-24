@@ -29,6 +29,8 @@
         <service android:name=".service.boundservice.BindService" />
         <service android:name=".service.boundservice.MessengerBindService" />
         <service android:name=".service.HelloService" />
+        <service android:name=".service.JobScheduler.JobSchedulerService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <activity
             android:name=".TestActivity"
