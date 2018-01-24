@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
    }
 
     public void cancelJobSchedulerService(View view){
-     
+
         mJobScheduler.cancelAll();
         Toast.makeText(MainActivity.this,
                 "JobSchedulerService cancelled ",
