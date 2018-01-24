@@ -48,11 +48,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this,
                             "Download complete. Download URI: " + string,
                             Toast.LENGTH_LONG).show();
-                    textView.setText("Download done");
+                    //textView.setText("Download done");
                 } else {
                     Toast.makeText(MainActivity.this, "Download failed",
                             Toast.LENGTH_LONG).show();
-                    textView.setText("Download failed");
+                   // textView.setText("Download failed");
                 }
             }
         }
@@ -121,17 +121,17 @@ public class MainActivity extends AppCompatActivity {
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< Common
 
 
-    private TextView textView;
+    //private TextView textView;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.content_main_new);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        textView = (TextView) findViewById(R.id.status);
+        //textView = (TextView) findViewById(R.id.status);
 
     }
 
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
 
         startService(intent);
 
-        textView.setText("Service started");
+        //textView.setText("Download Service started");
     }
 
     public void intentServiceTestDownload(View view) {
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
 
         startService(intent);
 
-        textView.setText("Intent Service started");
+        //textView.setText("Intent Service started");
     }
 
 
@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
     public void getNumber(View view){
 
         if(mBound){
-            textView.setText(String.valueOf(mService.getRandomNumber()));
+           // textView.setText(String.valueOf(mService.getRandomNumber()));
         }
 
 
@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
 
                     download();
                 } else {
-                    textView.setText("Service nooooooooooooooooo");
+                   // textView.setText("Service nooooooooooooooooo");
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }

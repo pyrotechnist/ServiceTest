@@ -38,6 +38,12 @@ public class IntentTestService extends IntentService {
     public void onCreate() {
         super.onCreate();
         mHandler = new Handler();
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(IntentTestService.this, "onCreate from intent service!", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     // will be called asynchronously by Android
