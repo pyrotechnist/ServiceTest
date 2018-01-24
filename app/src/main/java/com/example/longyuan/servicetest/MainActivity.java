@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.longyuan.servicetest.service.HandlerService;
 import com.example.longyuan.servicetest.service.boundservice.BindService;
 import com.example.longyuan.servicetest.service.HelloService;
 import com.example.longyuan.servicetest.service.intentservice.IntentTestService;
@@ -71,10 +72,9 @@ public class MainActivity extends AppCompatActivity {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin Bound Service
 
     BindService mService;
-    boolean mBound = false;
+    boolean mBoundService = false;
 
-    /** Messenger for communicating with the service. */
-    Messenger mMessengerService = null;
+
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -83,20 +83,41 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-
-         /*   // BindService
+            // BindService
          BindService.LocalBinder binder = (BindService.LocalBinder) service;
-            mService = binder.getService();*/
+            mService = binder.getService();
 
-            // MessengerBindService
-            mMessengerService = new Messenger(service);
 
-            mBound = true;
+            mBoundService = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
+            mBoundService = false;
+        }
+    };
+
+    /** Messenger for communicating with the service. */
+    Messenger mMessengerService = null;
+    boolean mBoundMessengerService = false;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnectionMessengerService = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+
+            // MessengerBindService
+            mMessengerService = new Messenger(service);
+
+            mBoundMessengerService = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBoundMessengerService = false;
         }
     };
 
@@ -249,13 +270,25 @@ public class MainActivity extends AppCompatActivity {
         //Intent bindIntent = new Intent(this, BindService.class);
 
         Intent bindIntent = new Intent(this, MessengerBindService.class);
-        bindService(bindIntent, mConnection, BIND_AUTO_CREATE);
+        bindService(bindIntent, mConnectionMessengerService, BIND_AUTO_CREATE);
 
     }
 
     public void unbindServiceMessager(View view){
 
-        unbindService(mConnection);
+        if(mBoundMessengerService){
+            unbindService(mConnectionMessengerService);
+            mBoundMessengerService  = false;
+            Toast.makeText(MainActivity.this,
+                    "Service Messager unbinded  " ,
+                    Toast.LENGTH_LONG).show();
+        }else
+        {
+            Toast.makeText(MainActivity.this,
+                    "Error, No service binded" ,
+                    Toast.LENGTH_LONG).show();
+        }
+
 
     }
 
@@ -269,12 +302,24 @@ public class MainActivity extends AppCompatActivity {
 
     public void unbindServiceCalcu(View view){
 
-        unbindService(mConnection);
+        if(mBoundService){
+            unbindService(mConnection);
+            mBoundService  = false;
+            Toast.makeText(MainActivity.this,
+                    "Service unbinded  " ,
+                    Toast.LENGTH_LONG).show();
+        }else
+        {
+            Toast.makeText(MainActivity.this,
+                    "Error, No service binded" ,
+                    Toast.LENGTH_LONG).show();
+        }
+
     }
 
     public void sendMessage(View view){
 
-        if (!mBound) return;
+        if (!mBoundMessengerService) return;
         // Create and send a message to the service, using a supported 'what' value
         Message msg = Message.obtain(null, MessengerBindService.MSG_SAY_HELLO, 0, 0);
         try {
@@ -289,8 +334,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void getNumber(View view){
 
-        if(mBound){
+        if(mBoundService){
            // textView.setText(String.valueOf(mService.getRandomNumber()));
+            Toast.makeText(MainActivity.this,
+                    "Get number from binded service:  " + mService.getRandomNumber(),
+                    Toast.LENGTH_LONG).show();
         }
 
 
@@ -303,14 +351,26 @@ public class MainActivity extends AppCompatActivity {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin  Service
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Begin  Service
 
-    public void startService(View view){
+    public void startHelloService(View view){
         Intent intent = new Intent(this, HelloService.class);
 
         startService(intent);
     }
 
-    public void stopService(View view){
+    public void startHandlerService(View view){
+        Intent intent = new Intent(this, HandlerService.class);
+
+        startService(intent);
+    }
+
+    public void stopHelloService(View view){
         Intent intent = new Intent(this, HelloService.class);
+
+        stopService(intent);
+    }
+
+    public void stopHandlerService(View view){
+        Intent intent = new Intent(this, HandlerService.class);
 
         stopService(intent);
     }

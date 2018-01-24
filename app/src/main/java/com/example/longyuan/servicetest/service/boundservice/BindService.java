@@ -30,9 +30,14 @@ public class BindService extends Service {
 
     public class LocalBinder extends Binder {
 
-        BindService getService() {
+        public BindService getService() {
             // Return this instance of LocalService so clients can call public methods
             return BindService.this;
         }
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        return super.onUnbind(intent);
     }
 }
