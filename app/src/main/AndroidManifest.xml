@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.longyuan.servicetest">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -25,14 +24,16 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".service.intentservice.IntentTestService" />
+        <service android:name=".service.HandlerService" />
+        <service android:name=".service.boundservice.BindService" />
+        <service android:name=".service.boundservice.MessengerBindService" />
+        <service android:name=".service.HelloService" />
 
-        <service android:name="com.example.longyuan.servicetest.service.intentservice.IntentTestService" />
-        <service android:name="com.example.longyuan.servicetest.service.HandlerService" />
-        <service android:name="com.example.longyuan.servicetest.service.boundservice.BindService" />
-        <service android:name="com.example.longyuan.servicetest.service.boundservice.MessengerBindService" />
-        <service android:name="com.example.longyuan.servicetest.service.HelloService" />
-
-
+        <activity
+            android:name=".TestActivity"
+            android:label="@string/title_activity_test"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
